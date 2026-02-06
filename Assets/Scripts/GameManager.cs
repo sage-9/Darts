@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     {
         SwitchState(GameState.Play);
     }
+    
     void SwitchState(GameState state)
     {
         gameState = state;
@@ -18,24 +19,15 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Initialize:
             {
-                
                 break;
             }
             case GameState.Play:
             {
-                
                 break;
             }
-
-            
         }
         OnGameStateChange?.Invoke(gameState);
     }
-    
-    
-    
-    
-    
 }
 
 public enum GameState

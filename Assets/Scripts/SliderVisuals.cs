@@ -4,7 +4,7 @@ public class SliderVisuals : MonoBehaviour
 {
    [SerializeField] private Transform start;
    [SerializeField] private Transform end;
-   [SerializeField] private Transform target;
+   [SerializeField] public Transform target;
    private Slider _slider;
    private float _t;
 

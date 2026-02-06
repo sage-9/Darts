@@ -4,6 +4,8 @@ using UnityEngine.Serialization;
 
 public class Slider : MonoBehaviour
 {
+   [SerializeField] public Transform start;
+   [SerializeField] public Transform end;
    [SerializeField] private float speed;
    public float sliderValue;
    private float _currentTime;

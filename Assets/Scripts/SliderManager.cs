@@ -7,8 +7,9 @@ public class SliderManager : MonoBehaviour
    [SerializeField] private Slider horizontalSlider;
    [SerializeField] private Slider verticalSlider;
    private Vector2 _aimPoint;
-   public static event Action<Vector2> OnAimPointChanged;
    bool _isPressed;
+   public static event Action PassHorizontal;
+   public static event Action PassVertical;
 
    void Awake()
    {
@@ -32,16 +33,11 @@ public class SliderManager : MonoBehaviour
       yield return new WaitUntil(() => _isPressed);
       _isPressed = false;
       horizontalSlider.StopSlider();
+      PassHorizontal?.Invoke();
       verticalSlider.StartSlider();
       yield return new WaitUntil((() => _isPressed));
       _isPressed = false;
       verticalSlider.StopSlider();
-      
+      PassVertical?.Invoke();
    }
-
-   
-
-   
-
-
 }
