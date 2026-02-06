@@ -6,15 +6,20 @@ public class SliderManager : MonoBehaviour
 {
    [SerializeField] private Slider horizontalSlider;
    [SerializeField] private Slider verticalSlider;
+   
+   
    private Vector2 _aimPoint;
    bool _isPressed;
-   public static event Action PassHorizontal;
-   public static event Action PassVertical;
+   
+   public static event Action SequenceFinished;
+   public static event Action<Vector2> CalculateScore;
 
+  
    void Awake()
    {
-      GameManager.OnGameStateChange += StartSliderSequence;
+      GameManager.StartSliderSequence += StartSliderSequence;
       InputHandler.OnClick += GetInput;
+      GameManager.CalculateScore += (() => CalculateScore?.Invoke(_aimPoint));
    }
    
    void GetInput()
@@ -22,9 +27,16 @@ public class SliderManager : MonoBehaviour
       _isPressed = true;
    }
 
-   void StartSliderSequence(GameState state)
+   void CalculateHitPosition()
    {
-      if(state == GameState.Play) StartCoroutine(SliderSequence());
+      _aimPoint.x = Mathf.Lerp(horizontalSlider.lowerLimit.position.x, horizontalSlider.upperLimit.position.x, horizontalSlider.sliderValue);
+      _aimPoint.y = Mathf.Lerp(verticalSlider.lowerLimit.position.y, verticalSlider.upperLimit.position.y, verticalSlider.sliderValue);
+         
+   }
+   
+   void StartSliderSequence()
+   {
+      StartCoroutine(SliderSequence());
    }
 
    IEnumerator SliderSequence()
@@ -33,11 +45,11 @@ public class SliderManager : MonoBehaviour
       yield return new WaitUntil(() => _isPressed);
       _isPressed = false;
       horizontalSlider.StopSlider();
-      PassHorizontal?.Invoke();
       verticalSlider.StartSlider();
       yield return new WaitUntil((() => _isPressed));
       _isPressed = false;
       verticalSlider.StopSlider();
-      PassVertical?.Invoke();
+      CalculateHitPosition();
+      SequenceFinished?.Invoke();
    }
 }

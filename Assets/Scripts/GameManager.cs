@@ -1,37 +1,66 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 public class GameManager : MonoBehaviour
 {
-    public GameState gameState;
-    public static Action<GameState> OnGameStateChange;
+    public static GameManager Instance;
+    [SerializeField] private PlayerData player1;
+    [SerializeField] private PlayerData player2;
+    [HideInInspector]public PlayerData currentPlayer;
+    public static event Action StartSliderSequence;
+    public static event Action CalculateScore;
+    
+    private bool _hasFinishedSequence;
+    private bool _hasFinishedTurn;
+    private bool _hasFinishedRound;
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
+        SliderManager.SequenceFinished += () => _hasFinishedSequence = true;
+    }
 
     void Start()
     {
-        SwitchState(GameState.Play);
+        StartCoroutine(Game());
+    }
+
+    IEnumerator Game()
+    {
+        currentPlayer = player1;
+        while (currentPlayer.playerScore > 0)
+        {
+            StartCoroutine(Round());
+            yield return new WaitUntil(() => _hasFinishedRound);
+            _hasFinishedRound = false;
+        }
+    }
+
+    IEnumerator Round()
+    {
+        currentPlayer = player1;
+        StartCoroutine(Turn());
+        yield return new WaitUntil(() => _hasFinishedTurn);
+        _hasFinishedTurn = false;
+        if (currentPlayer.playerScore <= 0) yield break;
+        currentPlayer = player2;
+        StartCoroutine(Turn());
+        yield return new WaitUntil(() => _hasFinishedTurn);
+        _hasFinishedTurn = false;
+        _hasFinishedRound = true;
     }
     
-    void SwitchState(GameState state)
-    {
-        gameState = state;
-        switch (state)
-        {
-            case GameState.Initialize:
-            {
-                break;
-            }
-            case GameState.Play:
-            {
-                break;
-            }
-        }
-        OnGameStateChange?.Invoke(gameState);
-    }
-}
 
-public enum GameState
-{
-    Initialize,
-    Play
+    IEnumerator Turn()
+    {
+        StartSliderSequence?.Invoke();
+        yield return new WaitUntil(() => _hasFinishedSequence);
+        _hasFinishedSequence = false;
+        CalculateScore?.Invoke();
+        _hasFinishedTurn = true;
+    }
 }

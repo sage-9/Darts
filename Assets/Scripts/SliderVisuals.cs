@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class SliderVisuals : MonoBehaviour
 {
-   [SerializeField] private Transform start;
-   [SerializeField] private Transform end;
    [SerializeField] public Transform target;
    private Slider _slider;
    private float _t;
@@ -16,6 +14,6 @@ public class SliderVisuals : MonoBehaviour
    void Update()
    {
       _t = _slider.sliderValue;
-      target.position = Vector3.Lerp(start.position, end.position, _t);
+      target.position = Vector3.Lerp(_slider.lowerLimit.position, _slider.upperLimit.position, _t);
    }
 }
