@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 
 public class GameManager : MonoBehaviour
@@ -32,7 +31,9 @@ public class GameManager : MonoBehaviour
     IEnumerator Game()
     {
         currentPlayer = player1;
-        while (currentPlayer.playerScore > 0)
+        player1.AssignScore();
+        player2.AssignScore();
+        while (currentPlayer.PlayerScore > 0)
         {
             StartCoroutine(Round());
             yield return new WaitUntil(() => _hasFinishedRound);
@@ -46,21 +47,25 @@ public class GameManager : MonoBehaviour
         StartCoroutine(Turn());
         yield return new WaitUntil(() => _hasFinishedTurn);
         _hasFinishedTurn = false;
-        if (currentPlayer.playerScore <= 0) yield break;
+        if (currentPlayer.PlayerScore <= 0) yield break;
         currentPlayer = player2;
         StartCoroutine(Turn());
         yield return new WaitUntil(() => _hasFinishedTurn);
         _hasFinishedTurn = false;
+        if (currentPlayer.PlayerScore <= 0) yield break;
         _hasFinishedRound = true;
     }
     
 
     IEnumerator Turn()
     {
+        //Announce which Players turn it is
         StartSliderSequence?.Invoke();
         yield return new WaitUntil(() => _hasFinishedSequence);
         _hasFinishedSequence = false;
+        //Shoot the Dart
         CalculateScore?.Invoke();
+        //update the score UI
         _hasFinishedTurn = true;
     }
 }

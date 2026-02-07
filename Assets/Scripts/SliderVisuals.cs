@@ -13,7 +13,7 @@ public class SliderVisuals : MonoBehaviour
 
    void Update()
    {
-      _t = _slider.sliderValue;
+      _t = _slider.SliderValue;
       target.position = Vector3.Lerp(_slider.lowerLimit.position, _slider.upperLimit.position, _t);
    }
 }

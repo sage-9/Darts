@@ -6,49 +6,46 @@ public class SliderManager : MonoBehaviour
 {
    [SerializeField] private Slider horizontalSlider;
    [SerializeField] private Slider verticalSlider;
-   
+
    
    private Vector2 _aimPoint;
    bool _isPressed;
    
    public static event Action SequenceFinished;
    public static event Action<Vector2> CalculateScore;
+   public static event Action StartVerticalSlider;
 
   
    void Awake()
    {
-      GameManager.StartSliderSequence += StartSliderSequence;
-      InputHandler.OnClick += GetInput;
+      GameManager.StartSliderSequence += (() => StartCoroutine(SliderSequence()));
+      InputHandler.OnClick += (() => _isPressed = true);
+      InputHandler.OnClick += StopAndGetValue;
       GameManager.CalculateScore += (() => CalculateScore?.Invoke(_aimPoint));
    }
    
-   void GetInput()
-   {
-      _isPressed = true;
-   }
-
    void CalculateHitPosition()
    {
-      _aimPoint.x = Mathf.Lerp(horizontalSlider.lowerLimit.position.x, horizontalSlider.upperLimit.position.x, horizontalSlider.sliderValue);
-      _aimPoint.y = Mathf.Lerp(verticalSlider.lowerLimit.position.y, verticalSlider.upperLimit.position.y, verticalSlider.sliderValue);
-         
+      _aimPoint.x = Mathf.Lerp(horizontalSlider.lowerLimit.position.x, horizontalSlider.upperLimit.position.x, horizontalSlider.SliderValue);
+      _aimPoint.y = Mathf.Lerp(verticalSlider.lowerLimit.position.y, verticalSlider.upperLimit.position.y, verticalSlider.SliderValue);
    }
    
-   void StartSliderSequence()
+   void StopAndGetValue()
    {
-      StartCoroutine(SliderSequence());
+      horizontalSlider.StopSlider();
+      verticalSlider.StopSlider();
    }
-
+   
    IEnumerator SliderSequence()
    {
       horizontalSlider.StartSlider();
       yield return new WaitUntil(() => _isPressed);
       _isPressed = false;
-      horizontalSlider.StopSlider();
+      StartVerticalSlider?.Invoke();
       verticalSlider.StartSlider();
       yield return new WaitUntil((() => _isPressed));
       _isPressed = false;
-      verticalSlider.StopSlider();
+      StartVerticalSlider?.Invoke();
       CalculateHitPosition();
       SequenceFinished?.Invoke();
    }
