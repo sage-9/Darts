@@ -13,6 +13,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameSettingsData gameSettings;
     [SerializeField] private TMP_Text winnerAnnouncement;
     [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private AudioEvent onClick;
+    [SerializeField] private AudioEvent onShoot;
+    [SerializeField] private AudioEvent jingle;
+    [SerializeField] private AudioSource audioSource;
     public UnityEvent onNewTurn;
     [HideInInspector]public PlayerData currentPlayer;
     public static event Action StartSliderSequence;
@@ -28,7 +32,8 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(this);
-        InputHandler.OnClick += (() => _isPressed = true);
+        InputHandler.OnClick += () => _isPressed = true;
+        InputHandler.OnClick += () => onClick.Play(audioSource);
         SliderManager.SequenceFinished += () => _hasFinishedSequence = true;
     }
 
@@ -91,19 +96,24 @@ public class GameManager : MonoBehaviour
 
     IEnumerator Turn()
     {
+        jingle.Play(audioSource);
         //Announce which Players turn it is
         onNewTurn?.Invoke();
         StartSliderSequence?.Invoke();
         yield return new WaitUntil(() => _hasFinishedSequence);
         _hasFinishedSequence = false;
         //Shoot the Dart
+        onShoot.Play(audioSource);
+        onClick.Play(audioSource);
         CalculateScore?.Invoke();
+        jingle.Play(audioSource);
         //update the score UI
         _hasFinishedTurn = true;
     }
 
     IEnumerator AnnounceWinner()
     {
+        jingle.Play(audioSource);
         gameOverPanel.SetActive(true);
         winnerAnnouncement.text = $"{currentPlayer.PlayerName}'s \n wins";
         yield return new WaitUntil(() => _isPressed);

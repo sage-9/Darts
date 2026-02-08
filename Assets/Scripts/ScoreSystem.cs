@@ -1,9 +1,13 @@
+using System;
+using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class ScoreSystem : MonoBehaviour
 {
     [SerializeField]private Transform boardCentre;
     [SerializeField]private float boardRadius;
+    [SerializeField]private TMP_Text scoreText;
     private float _score;
     private readonly int[] _scoreSlices = { 20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5 };
 
@@ -39,6 +43,9 @@ public class ScoreSystem : MonoBehaviour
         {
             GameManager.Instance.currentPlayer.SubtractScore(finalScore);
         }
+
+        StartCoroutine(AnnounceScore(finalScore));
+
     }
 
     private int ApplyMultipliers(int baseScore, float dist)
@@ -51,6 +58,13 @@ public class ScoreSystem : MonoBehaviour
         if ((dist / boardRadius) < 0.88f) return baseScore;//Single Outer
         if ((dist / boardRadius) < 0.95f) return baseScore * 2;//Double Ring
         return 0;//outside the points area
+    }
+
+    IEnumerator AnnounceScore(int finalScore)
+    {
+        scoreText.text = finalScore.ToString();
+        yield return new WaitForSeconds(0.5f);
+        scoreText.text = String.Empty;
     }
 
     void OnDisable()

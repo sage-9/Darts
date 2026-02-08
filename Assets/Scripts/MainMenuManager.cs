@@ -17,16 +17,28 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private PlayerData player1Data;
     [SerializeField] private PlayerData player2Data;
     [SerializeField] private GameSettingsData gameSettingsData;
+    
+    [Header("Sounds")]
+    [SerializeField]private AudioSource audioSource;
+
+    [SerializeField] private AudioEvent onMenuOpen;
+    [SerializeField] private AudioEvent onMenuClose;
+
+    [SerializeField] private AudioEvent onSelect;
+    
+    
 
     
     
     void Start()
     {
         slider.value = 0;
+        audioSource = GetComponent<AudioSource>();
     }
     
     public void Play()
     {
+        onSelect.Play(audioSource);
         SceneLoader.Instance.LoadScene("Game Scene");
     }
 
@@ -37,6 +49,7 @@ public class MainMenuManager : MonoBehaviour
     }
     public void Quit()
     {
+        onMenuClose.Play(audioSource);
         Application.Quit();
     }
     
@@ -88,9 +101,25 @@ public class MainMenuManager : MonoBehaviour
             }
         }
     }
+
+    public void PlayOnSelect()
+    {
+        onSelect.Play(audioSource);
+    }
+
+    public void PlayOnMenuOpen()
+    {
+        onMenuOpen.Play(audioSource);
+    }
+
+    public void PlayOnMenuClose()
+    {
+        onMenuClose.Play(audioSource);
+    }
     
     public void OnSliderValueChanged()
     {
+        onSelect.Play(audioSource);
         SetDifficulty((int)slider.value);
     }
 }
