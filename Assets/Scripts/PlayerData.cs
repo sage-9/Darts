@@ -16,6 +16,7 @@ public class PlayerData : ScriptableObject
     public void AssignScore(int playerScore = 301)
     {
         this.PlayerScore = playerScore;
+        OnScoreChanged?.Invoke();
     }
 
     public void SubtractScore(int amount)

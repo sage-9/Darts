@@ -15,6 +15,7 @@ public class PlayerScoreUI : MonoBehaviour
    void Start()
    {
       playerName.text = player.PlayerName;
+      Debug.Log("the Player Name is " + player.PlayerName);
       playerScore.text = player.PlayerScore.ToString();
    }
    

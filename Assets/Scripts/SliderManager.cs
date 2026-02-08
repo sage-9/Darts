@@ -18,10 +18,16 @@ public class SliderManager : MonoBehaviour
   
    void Awake()
    {
-      GameManager.StartSliderSequence += (() => StartCoroutine(SliderSequence()));
+      GameManager.StartSliderSequence += StartSliderSequence;
       InputHandler.OnClick += (() => _isPressed = true);
       InputHandler.OnClick += StopAndGetValue;
       GameManager.CalculateScore += (() => CalculateScore?.Invoke(_aimPoint));
+      
+   }
+
+   void StartSliderSequence()
+   {
+      StartCoroutine(SliderSequence());
    }
    
    void CalculateHitPosition()
@@ -38,7 +44,7 @@ public class SliderManager : MonoBehaviour
    
    IEnumerator SliderSequence()
    {
-      horizontalSlider.StartSlider();
+     horizontalSlider.StartSlider();
       yield return new WaitUntil(() => _isPressed);
       _isPressed = false;
       StartVerticalSlider?.Invoke();
@@ -47,6 +53,14 @@ public class SliderManager : MonoBehaviour
       _isPressed = false;
       StartVerticalSlider?.Invoke();
       CalculateHitPosition();
+      horizontalSlider.ResetSlider();
+      verticalSlider.ResetSlider();
       SequenceFinished?.Invoke();
+   }
+
+   private void OnDisable()
+   {
+      InputHandler.OnClick -= StopAndGetValue;
+      GameManager.StartSliderSequence -= StartSliderSequence;
    }
 }

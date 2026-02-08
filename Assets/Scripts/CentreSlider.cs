@@ -18,7 +18,7 @@ public class CentreSlider: MonoBehaviour
     void Awake()
     {
         _verticalStarted = false;
-        SliderManager.StartVerticalSlider+=(() => _verticalStarted = !_verticalStarted);
+        SliderManager.StartVerticalSlider+=() => _verticalStarted = !_verticalStarted;
     }
     
     void Update()

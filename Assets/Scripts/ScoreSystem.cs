@@ -39,9 +39,6 @@ public class ScoreSystem : MonoBehaviour
         {
             GameManager.Instance.currentPlayer.SubtractScore(finalScore);
         }
-        
-
-        Debug.Log($"{GameManager.Instance.currentPlayer.name} final score:{finalScore} newScore:{GameManager.Instance.currentPlayer.PlayerScore} (Base: {baseScore}, Angle: {adjustedAngle}, Distance: {distance})");
     }
 
     private int ApplyMultipliers(int baseScore, float dist)
@@ -54,5 +51,10 @@ public class ScoreSystem : MonoBehaviour
         if ((dist / boardRadius) < 0.88f) return baseScore;//Single Outer
         if ((dist / boardRadius) < 0.95f) return baseScore * 2;//Double Ring
         return 0;//outside the points area
+    }
+
+    void OnDisable()
+    {
+        SliderManager.CalculateScore -= CalculateScore;
     }
 }
